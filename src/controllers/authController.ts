@@ -1,4 +1,4 @@
-import {Request, Response} from 'express';
+import {Request, Response, NextFunction} from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/userModel';
@@ -36,7 +36,7 @@ interface DecodedToken {
 };
 
 // Login
-export const login = async (req: Request, res: Response): Promise<Response | void> => { 
+export const login = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => { 
     const { email, password } = req.body; 
     try { 
         const user = await User.findOne({ email }).exec(); 

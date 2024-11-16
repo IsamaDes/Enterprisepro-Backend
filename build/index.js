@@ -7,11 +7,10 @@ const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
-const businessRoutes_1 = __importDefault(require("./routes/businessRoutes"));
-// import vendorRoutes from './routes/vendorRoutes';
-const accountRoutes_1 = __importDefault(require("./routes/accountRoutes"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const businessRoutes_1 = __importDefault(require("./routes/businessRoutes"));
+const accountRoutes_1 = __importDefault(require("./routes/accountRoutes"));
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 setInterval(() => { if (global.gc) {
@@ -27,10 +26,9 @@ app.use((0, cors_1.default)({ origin: ['http://localhost:5173', 'https://enterpr
     optionsSuccessStatus: 200
 }));
 app.use(express_1.default.json());
-app.use('/api/auth', authRoutes_1.default);
 app.use('/api/business', businessRoutes_1.default);
-// app.use('/api/vendors', vendorRoutes);
 app.use('/api', accountRoutes_1.default);
+app.use('/api/auth', authRoutes_1.default);
 mongoose_1.default
     .connect("mongodb://localhost:27017/amsdb", {
     serverSelectionTimeoutMS: 30000,
