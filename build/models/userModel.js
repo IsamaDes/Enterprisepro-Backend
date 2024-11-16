@@ -23,6 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// import mongoose, { Document, Schema } from 'mongoose';
 const mongoose_1 = __importStar(require("mongoose"));
 // Define the Mongoose schema for the User model
 const userSchema = new mongoose_1.Schema({
