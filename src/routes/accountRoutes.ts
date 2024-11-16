@@ -1,6 +1,5 @@
-
-import { Router } from 'express';
-import {handleKYCData} from "../controllers/accountController";
+import {Router} from 'express';
+import { handleKYCData } from '../controllers/accountController';
 import { updateDirectorDetails, updateAdminDetails } from '../controllers/accountController';
 
 const router = Router();

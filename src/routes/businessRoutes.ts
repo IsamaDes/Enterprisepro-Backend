@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import { createBusiness, getBusiness, updateBusiness, deleteBusiness } from '../controllers/businessController';
+import {Router} from 'express';
+import { createBusiness, getBusiness,updateBusiness, deleteBusiness } from '../controllers/businessController';
 
 const router = Router();
 

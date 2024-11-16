@@ -1,4 +1,5 @@
-import mongoose, { Document, Schema } from 'mongoose';
+// import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, {Document, Schema} from 'mongoose';
 
 // Define the TypeScript interface for the User document
 export interface IUser extends Document {

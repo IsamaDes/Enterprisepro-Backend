@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import {Request, Response} from 'express';
 import Business from '../models/businessModel';
 
 // Create Business

@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, {Document, Schema} from 'mongoose';
 
 // Define the TypeScript interface for the Business document
 export interface IBusiness extends Document {
