@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
+import businessRoutes from './routes/businessRoutes';
+import accountRoutes from './routes/accountRoutes';
+
+
 
 
 dotenv.config();
@@ -21,6 +25,8 @@ app.use(cors({ origin: ['http://localhost:5173', 'https://enterprise-pro.vercel.
   }));
 
 app.use(express.json());
+app.use('/api/business', businessRoutes);
+app.use('/api', accountRoutes);
 
 
   mongoose
