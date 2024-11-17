@@ -1,7 +1,7 @@
 
 import express, { Request, Response } from 'express';
 import {  IUser } from '../models/userModel'; // Assuming you have a User model
-import { register  } from '../controllers/autheController';
+import { register  } from '../controllers/authController';
 import User from '../models/userModel';
 
 

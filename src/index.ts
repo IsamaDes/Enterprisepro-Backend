@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import businessRoutes from './routes/businessRoutes';
 import accountRoutes from './routes/accountRoutes';
-import authRoutes from './routes/autheRoutes';
+import authRoutes from './routes/authRoutes';
 
 
 
