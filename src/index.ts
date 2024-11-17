@@ -21,8 +21,11 @@ setInterval(() => { if (global.gc) { global.gc(); } else { console.warn('Garbage
 // Middleware
 app.use(bodyParser.json());
 
-app.use(cors({ origin: ['http://localhost:5173', 'https://enterprisepro-frontend.vercel.app/'], 
-  // Add your Vercel frontend URL here 
+app.use(cors({ 
+  
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'], 
   optionsSuccessStatus: 200 
   }));
 
