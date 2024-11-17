@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login = exports.register = void 0;
+exports.resetPassword = exports.login = exports.register = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+// import errorHandler from '../middleware/erroHandler'; 
 // Registration
 const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { businessName, contactPerson, email, phone, location, password } = req.body;
@@ -39,10 +40,10 @@ const register = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.register = register;
 // Login
-const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
-        const user = yield userModel_1.default.findOne({ email }).exec();
+        const user = yield userModel_1.default.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
@@ -50,25 +51,33 @@ const login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* ()
         if (!isMatch) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
-        const token = jsonwebtoken_1.default.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        return res.status(200).json({ message: 'Login successful', token });
+        const token = jsonwebtoken_1.default.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+        res.status(200).json({ message: 'Login successful', token });
     }
     catch (error) {
-        console.error('Error during login:', error);
-        return res.status(500).json({ message: 'Error logging in', error });
+        res.status(500).json({ message: 'Error logging in', error });
     }
 });
 exports.login = login;
 // Reset Password
-// export const resetPassword = async (req: Request, res: Response): Promise<Response | void> => {
-//      const { token } = req.params; 
-//      const { newPassword } = req.body; 
-//      try { 
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as DecodedToken; 
-//         const user = await User.findById(decoded.userId); 
-//         if (!user) { return res.status(404).json({ message: 'User not found' }); } 
-//         const hashedPassword = await bcrypt.hash(newPassword, 10); 
-//         user.password = hashedPassword; 
-//         await user.save(); 
-//         return res.status(200).json({ message: 'Password reset successfully' }); 
-//     } catch (error) { return res.status(400).json({ message: 'Invalid or expired token', error }); } };
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const user = yield userModel_1.default.findById(decoded.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const hashedPassword = yield bcryptjs_1.default.hash(newPassword, 10);
+        user.password = hashedPassword;
+        yield user.save();
+        res.status(200).json({ message: 'Password reset successfully' });
+    }
+    catch (error) {
+        res.status(400).json({ message: 'Invalid or expired token', error });
+    }
+});
+exports.resetPassword = resetPassword;
