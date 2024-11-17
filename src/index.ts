@@ -4,7 +4,7 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import businessRoutes from './routes/businessRoutes';
-import accountRoutes from './routes/accountRoutes';
+import loginRoute from './routes/loginRoute';
 import authRoutes from './routes/authRoutes';
 
 
@@ -31,8 +31,10 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/api/business', businessRoutes);
-app.use('/api', accountRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api', loginRoute);
+
+
 
 
 
