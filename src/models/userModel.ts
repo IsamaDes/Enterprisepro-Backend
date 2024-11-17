@@ -42,10 +42,10 @@ const userSchema: Schema = new Schema(
       required: true,
       trim: true,
     },
-    password: {
+     password: {
       type: String,
       required: true,
-      minlength: 6, // You can adjust the minimum password length
+      minlength: 6, 
     },
     role: {
       type: String,
