@@ -1,14 +1,53 @@
+// {
+//   "compilerOptions": {
+//     "target": "ES6",
+//     "module": "commonjs",
+//     "esModuleInterop": true,
+//     "strict": true,
+//     "skipLibCheck": true,
+//     "forceConsistentCasingInFileNames": true,
+//     "outDir": "./build",
+//     "rootDir": "./src"
+//   },
+//   "include": ["src/**/*.ts"],
+//   "exclude": ["node_modules"]
+// }
+
+
+
+
+
+
 {
+  "include": [
+    "src/**/*"
+  ],
+"exclude": [
+  "node_modules",
+  "build",
+  "dist"
+],
   "compilerOptions": {
+    "jsx": "react",
     "target": "ES6",
     "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "./dist",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
     "esModuleInterop": true,
-    "strict": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./build",
-    "rootDir": "./src"
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules"]
+    "strict": true,
+    "noImplicitAny": true,
+    "incremental": true,
+    "tsBuildInfoFile": "./build/.tsbuildinfo",
+    "sourceMap": false,
+    "types": ["node"],
+    "lib": ["es6", "dom"],
+
+
+
+  }
 }
