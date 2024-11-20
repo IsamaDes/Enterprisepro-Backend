@@ -41,7 +41,9 @@ app.use('/api', loginRoute);
 
 
   mongoose
-  .connect("mongodb://localhost:27017/amsdb", {
+  .connect("mongodb://localhost:27017/enterprisepro",
+    
+    {
     
     serverSelectionTimeoutMS: 30000, 
   socketTimeoutMS: 45000,
