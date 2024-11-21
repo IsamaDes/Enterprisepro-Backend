@@ -37,6 +37,10 @@ app.use('/api/business', businessRoutes);
 app.post('/api/auth/register', register);
 app.use('/api', loginRoute);
 
+
+app.get('/', (req: Request, res: Response) => { res.send('Welcome to the API'); });
+
+
 // TypeORM Connection
 createConnection({ 
   type: "mongodb", 
