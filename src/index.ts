@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction , Router} from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import axios from 'axios'; // Import axios
+import axios from 'axios'; 
 import businessRoutes from './routes/businessRoutes';
 import loginRoute from './routes/loginRoute';
 // import authRoutes from './routes/authRoutes';
@@ -30,7 +30,7 @@ setInterval(() => {
 app.use(express.json());
 
 app.use(cors({ 
-  origin: '*',
+  origin: ['http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'], 
   optionsSuccessStatus: 200 
@@ -70,9 +70,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 
-// Keep Render active 
+//Keep Render active 
 const url = `https://enterprisepro-backend.onrender.com`;
- const interval = 30000; 
+ const interval = 50000; 
  function reloadWebsite() { axios.get(url) .then(response => { 
   console.log(`Reloaded at ${new Date().toISOString()}: Status Code ${response.status}`);
  }) .catch(error => { console.error(`Error reloading at ${new Date().toISOString()}:`, error.message); 
