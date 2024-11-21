@@ -1,10 +1,11 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction , Router} from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import axios from 'axios'; // Import axios
 import businessRoutes from './routes/businessRoutes';
 import loginRoute from './routes/loginRoute';
 // import authRoutes from './routes/authRoutes';
-import { register } from './controllers/authController'; 
+import { register  } from './controllers/authController';
 import { createConnection } from 'typeorm';
 import { User } from './entity/User'; 
 import { Business } from './entity/Business';
@@ -12,7 +13,10 @@ import { KycDocument } from './entity/KycDocument';
 
 dotenv.config();
 
+
+
 const app = express();
+
 
 setInterval(() => { 
   if (global.gc) { 
@@ -40,6 +44,8 @@ app.use('/api', loginRoute);
 
 app.get('/', (req: Request, res: Response) => { res.send('Welcome to the API'); });
 
+app.get('/health-check', (req: Request, res: Response) => { res.send('OK'); });
+
 
 // TypeORM Connection
 createConnection({ 
@@ -62,6 +68,17 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     details: err.message
   });
 });
+
+
+// Keep Render active 
+const url = `https://enterprisepro-backend.onrender.com`;
+ const interval = 30000; 
+ function reloadWebsite() { axios.get(url) .then(response => { 
+  console.log(`Reloaded at ${new Date().toISOString()}: Status Code ${response.status}`);
+ }) .catch(error => { console.error(`Error reloading at ${new Date().toISOString()}:`, error.message); 
+}); 
+} setInterval(reloadWebsite, interval);
+
 
 // Server listening
 const PORT = process.env.PORT || 5000;
