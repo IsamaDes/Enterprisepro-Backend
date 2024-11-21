@@ -19,9 +19,9 @@
 
 
 {
-  "include": [
-    "src/**/*"
-  ],
+  "include": 
+   ["src/**/*.ts"],
+  
 "exclude": [
   "node_modules",
   "build",
@@ -31,7 +31,7 @@
     "jsx": "react",
     "target": "ES6",
     "module": "commonjs",
-    "rootDir": "src",
+    "rootDir": "./src",
     "outDir": "./dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -39,13 +39,15 @@
     "allowJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
+     "strict": true,
     "noImplicitAny": true,
     "incremental": true,
     "tsBuildInfoFile": "./build/.tsbuildinfo",
     "sourceMap": false,
     "types": ["node"],
     "lib": ["es6", "dom"],
+    "experimentalDecorators": true, 
+    "emitDecoratorMetadata": true
 
 
 

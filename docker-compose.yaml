@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  backend:
+    build: .
+    env_file: .env  # Reference the .env file in the root directory of your project
+    ports:
+      - 5000:5000
+    volumes:
+      - ./src:/usr/src/app/src  # Make sure your source code is live-mapped for hot-reloading
+    environment:
+      - NODE_ENV=development
+      - MONGO_URI=mongodb+srv://isamadesmond:Barikpena@enterprise.pleya.mongodb.net/?retryWrites=true&w=majority&appName=ENTERPRISE  # MongoDB Atlas URI
+    command: npm run dev  # Use npm run dev to start the app in development mode
+    networks:
+      - app-network
+
+volumes:
+  mongodb-data:  # Declare a volume for MongoDB data (not needed now since we are using Atlas)
+
+networks:
+  app-network:
+    driver: bridge  # Use a bridge network for inter-container communication (optional if not using local MongoDB)

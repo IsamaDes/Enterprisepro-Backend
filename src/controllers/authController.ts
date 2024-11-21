@@ -1,49 +1,48 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import User from '../models/userModel';
-// import errorHandler from '../middleware/erroHandler'; 
+import { getRepository } from 'typeorm';
+import { User } from '../entity/User';
 
-// Registration
- export const register = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response) => {
   const { businessName, contactPerson, email, phone, location, password } = req.body;
+  const userRepository = getRepository(User);
+
+  // Log incoming request data for debugging
+  console.log('Incoming request data:', req.body);
+
   try {
+    // Check if all required fields are defined
+    if (!businessName || !contactPerson || !email || !phone || !location || !password) {
+      throw new Error('Missing required fields');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({
+
+    // Log data before creating user
+    console.log('Creating user with data:', { businessName, contactPerson, email, phone, location, hashedPassword });
+
+    const user = userRepository.create({
       businessName,
       contactPerson,
       email,
       phone,
       location,
       password: hashedPassword,
-      role: 'admin'
     });
-    await user.save();
+
+    // Log user object before saving
+    console.log('User object before saving:', user);
+
+    await userRepository.save(user);
+
     res.status(201).json({ message: 'User registered successfully', user });
   } catch (error) {
-    res.status(500).json({ message: 'Error registering user', error });
-  }
-};
-
-
-
-
-// Reset Password
- export const resetPassword = async (req: Request, res: Response) => {
-  const { token } = req.params;
-  const { newPassword } = req.body;
-  try {
-    const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+    if (error instanceof Error) {
+      console.error("Error in registration:", error.message);
+      res.status(500).json({ message: 'Error registering user', error: error.message });
+    } else {
+      console.error("Unknown error:", error);
+      res.status(500).json({ message: 'An unknown error occurred' });
     }
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    await user.save();
-    res.status(200).json({ message: 'Password reset successfully' });
-  } catch (error) {
-    res.status(400).json({ message: 'Invalid or expired token', error });
   }
 };
-
