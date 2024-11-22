@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateAdminDetails = exports.updateDirectorDetails = exports.handleKYCData = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const userModel_1 = __importDefault(require("../models/userModel"));
-const businessModel_1 = __importDefault(require("../models/businessModel"));
-const kycDocumnetModel_1 = __importDefault(require("../models/kycDocumnetModel"));
+const UserModel_1 = __importDefault(require("../entity/UserModel"));
+const Business_1 = __importDefault(require("../entity/Business"));
+const KycDocument_1 = __importDefault(require("../entity/KycDocument"));
 const multer_1 = __importDefault(require("multer"));
 const storage = multer_1.default.diskStorage({ destination: (req, file, cb) => { cb(null, 'uploads/'); },
     filename: (req, file, cb) => {
@@ -53,7 +53,7 @@ exports.handleKYCData = [handleFileUploads, (req, res) => __awaiter(void 0, void
         console.log('Documents:', documents);
         console.log('Other Details:', { name, address, phoneNumber, dateOfBusinessIncorporation });
         try {
-            const newKycDocument = new kycDocumnetModel_1.default({ userId: new mongoose_1.default.Types.ObjectId(userId),
+            const newKycDocument = new KycDocument_1.default({ userId: new mongoose_1.default.Types.ObjectId(userId),
                 documents });
             yield newKycDocument.save();
             console.log('Data saved to MongoDB:', newKycDocument);
@@ -67,7 +67,7 @@ exports.handleKYCData = [handleFileUploads, (req, res) => __awaiter(void 0, void
 const updateDirectorDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { businessId, directorDetails } = req.body;
-        const business = yield businessModel_1.default.findByIdAndUpdate(businessId, { directorDetails }, { new: true });
+        const business = yield Business_1.default.findByIdAndUpdate(businessId, { directorDetails }, { new: true });
         if (!business) {
             res.status(404).json({ message: 'Business not found' });
             return;
@@ -88,7 +88,7 @@ exports.updateDirectorDetails = updateDirectorDetails;
 const updateAdminDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { adminId, adminDetails } = req.body;
-        const admin = yield userModel_1.default.findByIdAndUpdate(adminId, { adminDetails }, { new: true });
+        const admin = yield UserModel_1.default.findByIdAndUpdate(adminId, { adminDetails }, { new: true });
         if (!admin) {
             res.status(404).json({ message: 'Admin not found' });
             return;

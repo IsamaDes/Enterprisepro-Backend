@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteBusiness = exports.updateBusiness = exports.getBusiness = exports.createBusiness = void 0;
-const businessModel_1 = __importDefault(require("../models/businessModel"));
+const Business_1 = __importDefault(require("../entity/Business"));
 // Create Business
 const createBusiness = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, contactPerson, email, phoneNumber, location } = req.body;
     try {
-        const business = new businessModel_1.default({ name, contactPerson, email, phoneNumber, location });
+        const business = new Business_1.default({ name, contactPerson, email, phoneNumber, location });
         yield business.save();
         res.status(201).json({ message: 'Business created successfully', business });
     }
@@ -31,7 +31,7 @@ exports.createBusiness = createBusiness;
 const getBusiness = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const business = yield businessModel_1.default.findById(id);
+        const business = yield Business_1.default.findById(id);
         if (!business) {
             res.status(404).json({ message: 'Business not found' });
         }
@@ -47,7 +47,7 @@ const updateBusiness = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const { id } = req.params;
     const updateData = req.body;
     try {
-        const business = yield businessModel_1.default.findByIdAndUpdate(id, updateData, { new: true });
+        const business = yield Business_1.default.findByIdAndUpdate(id, updateData, { new: true });
         if (!business) {
             res.status(404).json({ message: 'Business not found' });
         }
@@ -62,7 +62,7 @@ exports.updateBusiness = updateBusiness;
 const deleteBusiness = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const business = yield businessModel_1.default.findByIdAndDelete(id);
+        const business = yield Business_1.default.findByIdAndDelete(id);
         if (!business) {
             res.status(404).json({ message: 'Business not found' });
         }

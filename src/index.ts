@@ -1,72 +1,49 @@
-import express, { Request, Response, NextFunction , Router} from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
-import cors from 'cors';
-import axios from 'axios'; 
+import mongoose from 'mongoose';  // Import mongoose
 import businessRoutes from './routes/businessRoutes';
 import loginRoute from './routes/loginRoute';
-// import authRoutes from './routes/authRoutes';
-import { register  } from './controllers/authController';
-import { createConnection } from 'typeorm';
-import { User } from './entity/User'; 
-import { Business } from './entity/Business';
-import { KycDocument } from './entity/KycDocument';
-import 'reflect-metadata';
-
+import { register } from './controllers/authController';
+import corsMiddleware from './middleware/corsMiddleware';
+import UserModel from './entity/UserModel';
+import KycDocument from './entity/KycDocument';
+import Business from './entity/Business';
+import {DataSource} from 'typeorm'
 
 dotenv.config();
 
-
-
 const app = express();
 
-
-
-
+// Garbage collection (optional, remove if unnecessary)
 setInterval(() => { 
   if (global.gc) { 
     global.gc(); 
   } else { 
     console.warn('Garbage collection is not exposed');
-   } 
-  }, 60000);
+  } 
+}, 60000);
 
 // Middleware
 app.use(express.json());
-
-
-app.use(cors({ 
-  origin: ['http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-  optionsSuccessStatus: 200 
-}));
-
-app.use(express.json());
+app.use(corsMiddleware);
 app.use('/api/business', businessRoutes);
 app.post('/api/auth/register', register);
 app.use('/api', loginRoute);
-
 
 app.get('/', (req: Request, res: Response) => { res.send('Welcome to the API'); });
 
 app.get('/health-check', (req: Request, res: Response) => { res.send('OK'); });
 
-
-// TypeORM Connection
-createConnection({ 
-  type: 'postgres', 
-  url: process.env.DATABASE_URL,
-  host: 'localhost', 
-  port: 5432, 
-  username: process.env.DB_USERNAME, 
-  password: process.env.DB_PASSWORD,
-  database: 'enterpriseapp', 
-  entities: [User, Business, KycDocument], 
-  synchronize: true, 
-  logging: true, 
-}).then(() => { 
-  console.log('PostgreSQL connected');
- }).catch(error => { console.error('PostgreSQL connection error:', error); });
+// MongoDB connection with Mongoose
+mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost:27017/enterpriseapp', {
+  
+})
+  .then(() => {
+    console.log('MongoDB connected');
+  })
+  .catch((error) => {
+    console.error('Error during MongoDB connection', error);
+  });
 
 // Error Handling Middleware 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {   
@@ -78,14 +55,30 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 
-//Keep Render active 
-const url = `https://enterprisepro-backend.onrender.com`;
- const interval = 50000; 
- function reloadWebsite() { axios.get(url) .then(response => { 
-  console.log(`Reloaded at ${new Date().toISOString()}: Status Code ${response.status}`);
- }) .catch(error => { console.error(`Error reloading at ${new Date().toISOString()}:`, error.message); 
-}); 
-} setInterval(reloadWebsite, interval);
+
+
+const AppDataSource = new DataSource({
+  type: 'mongodb',
+  url: process.env.DATABASE_URL,
+  synchronize: true,
+  logging: true,
+  entities: [
+    UserModel,
+    Business,
+    KycDocument,
+    ...(process.env.NODE_ENV === 'production' ? ['./dist/entity/*.js'] : ['./src/entity/*.ts']),
+  ],
+});
+
+AppDataSource.initialize()
+  .then(() => {
+    console.log('MongoDB connected');
+  })
+  .catch((error) => {
+    console.error('Error during DataSource initialization:', error);
+  });
+
+
 
 
 // Server listening

@@ -1,22 +1,37 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
-import {User} from "./User"
+import mongoose, { Document, Schema } from 'mongoose';
 
-@Entity()
-export class KycDocument {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
-  @ManyToOne(() => User, user => user.kycDocuments, { nullable: false })
-  user!: User;
-
-  @Column("jsonb")
-  documents!: { fileType: string; filePath: string }[];
-
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @UpdateDateColumn()
-  updatedAt!: Date;
+// Define TypeScript interface for the KYC Document
+export interface IKycDocument extends Document {
+  userId: mongoose.Types.ObjectId;
+  documents: {
+    fileType: string;
+    filePath: string;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
+// Define the Mongoose schema for KYC Document
+const kycDocumentSchema: Schema = new Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    documents: [
+      {
+        fileType: { type: String, required: true },
+        filePath: { type: String, required: true }
+      }
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
+// Create the KYC Document model
+const KycDocument = mongoose.model<IKycDocument>('KycDocument', kycDocumentSchema);
+
+export default KycDocument;
