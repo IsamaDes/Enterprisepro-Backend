@@ -59,7 +59,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 const AppDataSource = new DataSource({
   type: 'mongodb',
-  url: process.env.DATABASE_URL,
+  url: process.env.MONGO_URI, // Corrected to match your env file
   synchronize: true,
   logging: true,
   entities: [
