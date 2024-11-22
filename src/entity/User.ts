@@ -1,11 +1,10 @@
-import { Entity, Column, OneToMany, ObjectIdColumn } from 'typeorm';
-import { ObjectId } from 'mongodb';  // Import MongoDB's ObjectId
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { KycDocument } from './KycDocument';
 
 @Entity()
 export class User {
-  @ObjectIdColumn()
-  id!: ObjectId;  // Use MongoDB's ObjectId
+  @PrimaryGeneratedColumn()
+  id!: number;  // Use PostgreSQL's auto-increment primary key
 
   @Column()
   businessName!: string;

@@ -10,12 +10,16 @@ import { createConnection } from 'typeorm';
 import { User } from './entity/User'; 
 import { Business } from './entity/Business';
 import { KycDocument } from './entity/KycDocument';
+import 'reflect-metadata';
+
 
 dotenv.config();
 
 
 
 const app = express();
+
+
 
 
 setInterval(() => { 
@@ -28,6 +32,7 @@ setInterval(() => {
 
 // Middleware
 app.use(express.json());
+
 
 app.use(cors({ 
   origin: ['http://localhost:5173'],
@@ -49,16 +54,19 @@ app.get('/health-check', (req: Request, res: Response) => { res.send('OK'); });
 
 // TypeORM Connection
 createConnection({ 
-  type: "mongodb", 
-  url: process.env.MONGO_URI,  // Use the connection string from the .env file
-  useUnifiedTopology: true,
+  type: 'postgres', 
+  url: process.env.DATABASE_URL,
+  host: 'localhost', 
+  port: 5432, 
+  username: process.env.DB_USERNAME, 
+  password: process.env.DB_PASSWORD,
+  database: 'enterpriseapp', 
   entities: [User, Business, KycDocument], 
-  synchronize: true 
+  synchronize: true, 
+  logging: true, 
 }).then(() => { 
-  console.log("MongoDB connected");
-}).catch(error => {
-  console.error("MongoDB connection error: ", error);
-});
+  console.log('PostgreSQL connected');
+ }).catch(error => { console.error('PostgreSQL connection error:', error); });
 
 // Error Handling Middleware 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {   
