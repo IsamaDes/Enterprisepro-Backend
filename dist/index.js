@@ -51,7 +51,8 @@ app.use((err, req, res, next) => {
 });
 const AppDataSource = new typeorm_1.DataSource({
     type: 'mongodb',
-    url: process.env.MONGO_URI, // Corrected to match your env file
+    url: process.env.MONGO_URI,
+    ssl: true,
     synchronize: true,
     logging: true,
     entities: [
