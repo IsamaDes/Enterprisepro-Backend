@@ -1,22 +1,3 @@
-// {
-//   "compilerOptions": {
-//     "target": "ES6",
-//     "module": "commonjs",
-//     "esModuleInterop": true,
-//     "strict": true,
-//     "skipLibCheck": true,
-//     "forceConsistentCasingInFileNames": true,
-//     "outDir": "./build",
-//     "rootDir": "./src"
-//   },
-//   "include": ["src/**/*.ts"],
-//   "exclude": ["node_modules"]
-// }
-
-
-
-
-
 
 {
   "include": 
@@ -48,8 +29,5 @@
     "lib": ["es6", "dom"],
     "experimentalDecorators": true, 
     "emitDecoratorMetadata": true
-
-
-
   }
 }

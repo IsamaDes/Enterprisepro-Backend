@@ -52,7 +52,7 @@ app.use((err, req, res, next) => {
 const AppDataSource = new typeorm_1.DataSource({
     type: 'mongodb',
     url: process.env.MONGO_URI,
-    ssl: true,
+    ssl: false,
     synchronize: true,
     logging: true,
     entities: [
