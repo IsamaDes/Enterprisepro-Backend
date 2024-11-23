@@ -8,7 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose")); // Import mongoose
 const businessRoutes_1 = __importDefault(require("./routes/businessRoutes"));
 const loginRoute_1 = __importDefault(require("./routes/loginRoute"));
-const authController_1 = require("./controllers/authController");
+const authRoutes_1 = __importDefault(require("./routes/authRoutes")); // Import the auth routes
 const corsMiddleware_1 = __importDefault(require("./middleware/corsMiddleware"));
 const UserModel_1 = __importDefault(require("./entity/UserModel"));
 const KycDocument_1 = __importDefault(require("./entity/KycDocument"));
@@ -29,7 +29,7 @@ setInterval(() => {
 app.use(express_1.default.json());
 app.use(corsMiddleware_1.default);
 app.use('/api/business', businessRoutes_1.default);
-app.post('/api/auth/register', authController_1.register);
+app.use('/api/auth', authRoutes_1.default);
 app.use('/api', loginRoute_1.default);
 app.get('/', (req, res) => { res.send('Welcome to the API'); });
 app.get('/health-check', (req, res) => { res.send('OK'); });

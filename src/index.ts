@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';  // Import mongoose
 import businessRoutes from './routes/businessRoutes';
 import loginRoute from './routes/loginRoute';
-import { register } from './controllers/authController';
+import authRoutes from './routes/authRoutes';  // Import the auth routes
 import corsMiddleware from './middleware/corsMiddleware';
 import UserModel from './entity/UserModel';
 import KycDocument from './entity/KycDocument';
@@ -27,7 +27,7 @@ setInterval(() => {
 app.use(express.json());
 app.use(corsMiddleware);
 app.use('/api/business', businessRoutes);
-app.post('/api/auth/register', register);
+app.use('/api/auth', authRoutes);
 app.use('/api', loginRoute);
 
 app.get('/', (req: Request, res: Response) => { res.send('Welcome to the API'); });
