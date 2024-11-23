@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';  
 import businessRoutes from './routes/businessRoutes';
@@ -20,8 +21,15 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next(); // Pass control to the next middleware or route handler
 });
 
-// CORS middleware to handle pre-flight requests
-app.options('*', corsMiddleware); // Allow pre-flight requests for all routes
+
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://enterprisepro-frontend.onrender.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
 
 // Garbage collection (optional, remove if unnecessary)
 setInterval(() => { 
@@ -33,8 +41,9 @@ setInterval(() => {
 }, 60000);
 
 // Middleware
+// CORS middleware to handle pre-flight requests
+app.options('*', cors(corsOptions)); // Allow pre-flight requests for all routes
 app.use(express.json());
-app.use(corsMiddleware);
 app.use('/api/business', businessRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api', loginRoute);

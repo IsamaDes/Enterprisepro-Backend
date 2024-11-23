@@ -4,12 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const businessRoutes_1 = __importDefault(require("./routes/businessRoutes"));
 const loginRoute_1 = __importDefault(require("./routes/loginRoute"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
-const corsMiddleware_1 = __importDefault(require("./middleware/corsMiddleware"));
 const UserModel_1 = __importDefault(require("./entity/UserModel"));
 const KycDocument_1 = __importDefault(require("./entity/KycDocument"));
 const Business_1 = __importDefault(require("./entity/Business"));
@@ -21,8 +21,13 @@ app.use((req, res, next) => {
     console.log('Incoming request headers:', req.headers);
     next(); // Pass control to the next middleware or route handler
 });
-// CORS middleware to handle pre-flight requests
-app.options('*', corsMiddleware_1.default); // Allow pre-flight requests for all routes
+const corsOptions = {
+    origin: ['http://localhost:5173', 'https://enterprisepro-frontend.onrender.com'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200,
+};
+app.use((0, cors_1.default)(corsOptions));
 // Garbage collection (optional, remove if unnecessary)
 setInterval(() => {
     if (global.gc) {
@@ -33,8 +38,9 @@ setInterval(() => {
     }
 }, 60000);
 // Middleware
+// CORS middleware to handle pre-flight requests
+app.options('*', (0, cors_1.default)(corsOptions)); // Allow pre-flight requests for all routes
 app.use(express_1.default.json());
-app.use(corsMiddleware_1.default);
 app.use('/api/business', businessRoutes_1.default);
 app.use('/api/auth', authRoutes_1.default);
 app.use('/api', loginRoute_1.default);
