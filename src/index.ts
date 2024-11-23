@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';  // Import mongoose
+import mongoose from 'mongoose';  
 import businessRoutes from './routes/businessRoutes';
 import loginRoute from './routes/loginRoute';
-import authRoutes from './routes/authRoutes';  // Import the auth routes
+import authRoutes from './routes/authRoutes';  
 import corsMiddleware from './middleware/corsMiddleware';
 import UserModel from './entity/UserModel';
 import KycDocument from './entity/KycDocument';

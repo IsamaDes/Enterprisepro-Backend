@@ -5,10 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const mongoose_1 = __importDefault(require("mongoose")); // Import mongoose
+const mongoose_1 = __importDefault(require("mongoose"));
 const businessRoutes_1 = __importDefault(require("./routes/businessRoutes"));
 const loginRoute_1 = __importDefault(require("./routes/loginRoute"));
-const authRoutes_1 = __importDefault(require("./routes/authRoutes")); // Import the auth routes
+const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const corsMiddleware_1 = __importDefault(require("./middleware/corsMiddleware"));
 const UserModel_1 = __importDefault(require("./entity/UserModel"));
 const KycDocument_1 = __importDefault(require("./entity/KycDocument"));
