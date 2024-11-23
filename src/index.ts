@@ -35,8 +35,9 @@ app.get('/', (req: Request, res: Response) => { res.send('Welcome to the API'); 
 app.get('/health-check', (req: Request, res: Response) => { res.send('OK'); });
 
 // MongoDB connection with Mongoose
-mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost:27017/enterpriseapp', {
-  
+mongoose.connect(process.env.MONGO_URI || '', {
+  // useNewUrlParser: true,
+  // useUnifiedTopology: true,
 })
   .then(() => {
     console.log('MongoDB connected');

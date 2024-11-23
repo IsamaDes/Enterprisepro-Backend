@@ -34,7 +34,10 @@ app.use('/api', loginRoute_1.default);
 app.get('/', (req, res) => { res.send('Welcome to the API'); });
 app.get('/health-check', (req, res) => { res.send('OK'); });
 // MongoDB connection with Mongoose
-mongoose_1.default.connect(process.env.DATABASE_URL || 'mongodb://localhost:27017/enterpriseapp', {})
+mongoose_1.default.connect(process.env.MONGO_URI || '', {
+// useNewUrlParser: true,
+// useUnifiedTopology: true,
+})
     .then(() => {
     console.log('MongoDB connected');
 })
@@ -70,5 +73,10 @@ AppDataSource.initialize()
     console.error('Error during DataSource initialization:', error);
 });
 // Server listening
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const port = Number(process.env.PORT) || 5000;
+if (isNaN(port)) {
+    throw new Error('The port is not a valid number!');
+}
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server is running on port ${port}`);
+});
