@@ -60,7 +60,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 const AppDataSource = new DataSource({
   type: 'mongodb',
   url: process.env.MONGO_URI,
-  ssl: true, 
+  ssl: false, 
   synchronize: true,
   logging: true,
   entities: [
