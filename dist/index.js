@@ -16,6 +16,13 @@ const Business_1 = __importDefault(require("./entity/Business"));
 const typeorm_1 = require("typeorm");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
+// Log incoming request headers
+app.use((req, res, next) => {
+    console.log('Incoming request headers:', req.headers);
+    next(); // Pass control to the next middleware or route handler
+});
+// CORS middleware to handle pre-flight requests
+app.options('*', corsMiddleware_1.default); // Allow pre-flight requests for all routes
 // Garbage collection (optional, remove if unnecessary)
 setInterval(() => {
     if (global.gc) {

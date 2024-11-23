@@ -14,6 +14,15 @@ dotenv.config();
 
 const app = express();
 
+// Log incoming request headers
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log('Incoming request headers:', req.headers);
+  next(); // Pass control to the next middleware or route handler
+});
+
+// CORS middleware to handle pre-flight requests
+app.options('*', corsMiddleware); // Allow pre-flight requests for all routes
+
 // Garbage collection (optional, remove if unnecessary)
 setInterval(() => { 
   if (global.gc) { 
