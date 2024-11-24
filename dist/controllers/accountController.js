@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateAdminDetails = exports.updateDirectorDetails = exports.handleKYCData = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const UserModel_1 = __importDefault(require("../entity/UserModel"));
+const User_1 = __importDefault(require("../entity/User"));
 const Business_1 = __importDefault(require("../entity/Business"));
 const KycDocument_1 = __importDefault(require("../entity/KycDocument"));
 const multer_1 = __importDefault(require("multer"));
@@ -88,7 +88,7 @@ exports.updateDirectorDetails = updateDirectorDetails;
 const updateAdminDetails = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { adminId, adminDetails } = req.body;
-        const admin = yield UserModel_1.default.findByIdAndUpdate(adminId, { adminDetails }, { new: true });
+        const admin = yield User_1.default.findByIdAndUpdate(adminId, { adminDetails }, { new: true });
         if (!admin) {
             res.status(404).json({ message: 'Admin not found' });
             return;

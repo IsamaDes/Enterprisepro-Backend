@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.login = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const UserModel_1 = __importDefault(require("../entity/UserModel"));
+const User_1 = __importDefault(require("../entity/User"));
 const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
         // Find the user by email using Mongoose
-        const user = yield UserModel_1.default.findOne({ email });
+        const user = yield User_1.default.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }

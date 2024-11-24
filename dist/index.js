@@ -6,14 +6,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
-const mongoose_1 = __importDefault(require("mongoose"));
 const businessRoutes_1 = __importDefault(require("./routes/businessRoutes"));
 const loginRoute_1 = __importDefault(require("./routes/loginRoute"));
 const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
-const UserModel_1 = __importDefault(require("./entity/UserModel"));
-const KycDocument_1 = __importDefault(require("./entity/KycDocument"));
-const Business_1 = __importDefault(require("./entity/Business"));
-const typeorm_1 = require("typeorm");
+const db_1 = __importDefault(require("./config/db")); // Assuming your DB connection setup
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const helmet_1 = __importDefault(require("helmet"));
+const compression_1 = __importDefault(require("compression"));
+const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize")); // Assuming you're using express-mongo-sanitize
+const passport_1 = __importDefault(require("passport")); // If using Passport.js for authentication
+const sanitizeInputs_1 = __importDefault(require("./middleware/sanitizeInputs")); // Custom input sanitization middleware
+const logRequest_1 = __importDefault(require("./middleware/logRequest")); // Custom request logging middleware
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Log incoming request headers
@@ -28,16 +31,23 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 app.use((0, cors_1.default)(corsOptions));
-// Garbage collection (optional, remove if unnecessary)
-setInterval(() => {
-    if (global.gc) {
-        global.gc();
+app.use((0, cookie_parser_1.default)(process.env.COOKIE_SECRET || 'defaultSecret')); // Use a secret for cookie parsing
+app.use((0, helmet_1.default)()); // Security middleware that sets HTTP headers to secure your app
+app.use(sanitizeInputs_1.default); // Custom input sanitization (ensure you're using this middleware)
+app.use((0, express_mongo_sanitize_1.default)()); // Prevent NoSQL injection attacks by sanitizing user inputs
+app.use(logRequest_1.default); // Custom logging middleware for requests
+app.use(passport_1.default.initialize()); // Initialize Passport for authentication
+// Setup compression with a custom filter for the "x-no-compression" header
+const shouldCompress = (req, res) => {
+    if (req.headers['x-no-compression']) {
+        // Don't compress responses if the header is present
+        return false;
     }
-    else {
-        console.warn('Garbage collection is not exposed');
-    }
-}, 60000);
-// Middleware
+    return compression_1.default.filter(req, res); // Default compression filter
+};
+app.use((0, compression_1.default)({ filter: shouldCompress })); // Enable response compression
+// Middleware for parsing incoming JSON requests
+app.use(express_1.default.json()); // Parse incoming JSON requests
 // CORS middleware to handle pre-flight requests
 app.options('*', (0, cors_1.default)(corsOptions)); // Allow pre-flight requests for all routes
 app.use(express_1.default.json());
@@ -46,17 +56,7 @@ app.use('/api/auth', authRoutes_1.default);
 app.use('/api', loginRoute_1.default);
 app.get('/', (req, res) => { res.send('Welcome to the API'); });
 app.get('/health-check', (req, res) => { res.send('OK'); });
-// MongoDB connection with Mongoose
-mongoose_1.default.connect(process.env.MONGO_URI || '', {
-// useNewUrlParser: true,
-// useUnifiedTopology: true,
-})
-    .then(() => {
-    console.log('MongoDB connected');
-})
-    .catch((error) => {
-    console.error('Error during MongoDB connection', error);
-});
+(0, db_1.default)();
 // Error Handling Middleware 
 app.use((err, req, res, next) => {
     console.error("Unhandled error:", err.stack);
@@ -65,31 +65,23 @@ app.use((err, req, res, next) => {
         details: err.message
     });
 });
-const AppDataSource = new typeorm_1.DataSource({
-    type: 'mongodb',
-    url: process.env.MONGO_URI,
-    ssl: false,
-    synchronize: true,
-    logging: true,
-    entities: [
-        UserModel_1.default,
-        Business_1.default,
-        KycDocument_1.default,
-        ...(process.env.NODE_ENV === 'production' ? ['./dist/entity/*.js'] : ['./src/entity/*.ts']),
-    ],
+// Start server
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
-AppDataSource.initialize()
-    .then(() => {
-    console.log('MongoDB connected');
-})
-    .catch((error) => {
-    console.error('Error during DataSource initialization:', error);
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+    console.log('SIGTERM received. Shutting down gracefully...');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });
-// Server listening
-const port = Number(process.env.PORT) || 5000;
-if (isNaN(port)) {
-    throw new Error('The port is not a valid number!');
-}
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Server is running on port ${port}`);
+process.on('SIGINT', () => {
+    console.log('SIGINT received. Shutting down gracefully...');
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
 });

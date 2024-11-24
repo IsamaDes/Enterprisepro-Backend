@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import mongoose from 'mongoose'
-import User from '../entity/UserModel';
+import User from '../entity/User';
 import Business from '../entity/Business';
 import KycDocument from '../entity/KycDocument';
 import multer from "multer";

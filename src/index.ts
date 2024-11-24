@@ -1,19 +1,24 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import mongoose from 'mongoose';  
 import businessRoutes from './routes/businessRoutes';
 import loginRoute from './routes/loginRoute';
-import authRoutes from './routes/authRoutes';  
-import corsMiddleware from './middleware/corsMiddleware';
-import UserModel from './entity/UserModel';
-import KycDocument from './entity/KycDocument';
-import Business from './entity/Business';
-import {DataSource} from 'typeorm'
+import authRoutes from './routes/authRoutes'; 
+import connectDB from './config/db'; // Assuming your DB connection setup
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import compression from 'compression';
+import mongoSanitize from 'express-mongo-sanitize'; // Assuming you're using express-mongo-sanitize
+import passport from 'passport'; // If using Passport.js for authentication
+import sanitizeInputs from './middleware/sanitizeInputs'; // Custom input sanitization middleware
+import logRequest from './middleware/logRequest'; // Custom request logging middleware
+
+
 
 dotenv.config();
 
-const app = express();
+const app: Application = express();
+
 
 // Log incoming request headers
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -29,18 +34,28 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
+app.use(cookieParser(process.env.COOKIE_SECRET || 'defaultSecret')); // Use a secret for cookie parsing
+app.use(helmet()); // Security middleware that sets HTTP headers to secure your app
+app.use(sanitizeInputs); // Custom input sanitization (ensure you're using this middleware)
+app.use(mongoSanitize()); // Prevent NoSQL injection attacks by sanitizing user inputs
+app.use(logRequest); // Custom logging middleware for requests
+app.use(passport.initialize()); // Initialize Passport for authentication
 
 
-// Garbage collection (optional, remove if unnecessary)
-setInterval(() => { 
-  if (global.gc) { 
-    global.gc(); 
-  } else { 
-    console.warn('Garbage collection is not exposed');
-  } 
-}, 60000);
+// Setup compression with a custom filter for the "x-no-compression" header
+const shouldCompress = (req: Request, res: Response) => {
+  if (req.headers['x-no-compression']) {
+      // Don't compress responses if the header is present
+      return false;
+  }
+  return compression.filter(req, res); // Default compression filter
+};
 
-// Middleware
+app.use(compression({ filter: shouldCompress })); // Enable response compression
+
+// Middleware for parsing incoming JSON requests
+app.use(express.json()); // Parse incoming JSON requests
+
 // CORS middleware to handle pre-flight requests
 app.options('*', cors(corsOptions)); // Allow pre-flight requests for all routes
 app.use(express.json());
@@ -52,17 +67,8 @@ app.get('/', (req: Request, res: Response) => { res.send('Welcome to the API'); 
 
 app.get('/health-check', (req: Request, res: Response) => { res.send('OK'); });
 
-// MongoDB connection with Mongoose
-mongoose.connect(process.env.MONGO_URI || '', {
-  // useNewUrlParser: true,
-  // useUnifiedTopology: true,
-})
-  .then(() => {
-    console.log('MongoDB connected');
-  })
-  .catch((error) => {
-    console.error('Error during MongoDB connection', error);
-  });
+
+connectDB();
 
 // Error Handling Middleware 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {   
@@ -74,39 +80,25 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 });
 
 
-
-
-const AppDataSource = new DataSource({
-  type: 'mongodb',
-  url: process.env.MONGO_URI,
-  ssl: false, 
-  synchronize: true,
-  logging: true,
-  entities: [
-    UserModel,
-    Business,
-    KycDocument,
-    ...(process.env.NODE_ENV === 'production' ? ['./dist/entity/*.js'] : ['./src/entity/*.ts']),
-  ],
+// Start server
+const PORT = process.env.PORT || 5000;
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log('MongoDB connected');
-  })
-  .catch((error) => {
-    console.error('Error during DataSource initialization:', error);
+// Graceful shutdown handling
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
   });
+});
 
-
-
-
-// Server listening
-const port = Number(process.env.PORT) || 5000; 
-if (isNaN(port)) {
-  throw new Error('The port is not a valid number!');
-}
-
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server is running on port ${port}`);
+process.on('SIGINT', () => {
+  console.log('SIGINT received. Shutting down gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    process.exit(0);
+  });
 });
