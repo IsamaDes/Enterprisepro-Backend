@@ -1,5 +1,5 @@
 {
-  "name": "enterprisepro",
+  "name": "EnterpriseBackend",
   "version": "1.0.0",
   "description": "Agent Management Software",
   "main": "index.ts",
@@ -38,7 +38,7 @@
     "nodemon": "^3.1.7",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.6.3"
   },
   "dependencies": {
     "@react-email/components": "^0.0.14",
@@ -68,7 +68,7 @@
     "node-cache": "^5.1.2",
     "nodemailer": "^6.9.16",
     "object.groupby": "^1.0.3",
-    "passport-local": "^1.0.0",
+    "passport": "^0.7.0",
     "pdfkit": "^0.14.0",
     "pg": "^8.13.1",
     "postgres": "^3.4.5",
