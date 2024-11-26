@@ -8,6 +8,7 @@ export interface IUser  extends Document{
   location: string;
   password: string;
   _id: string;
+  isVerified: { type: Boolean, default: false };
 }
 
 const UserSchema = new Schema<IUser>({

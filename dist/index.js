@@ -17,6 +17,7 @@ const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize
 const passport_1 = __importDefault(require("passport")); // If using Passport.js for authentication
 const sanitizeInputs_1 = __importDefault(require("./middleware/sanitizeInputs")); // Custom input sanitization middleware
 const logRequest_1 = __importDefault(require("./middleware/logRequest")); // Custom request logging middleware
+const confirmation_1 = __importDefault(require("./routes/confirmation"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Log incoming request headers
@@ -53,6 +54,7 @@ app.options('*', (0, cors_1.default)(corsOptions)); // Allow pre-flight requests
 app.use(express_1.default.json());
 app.use('/api/business', businessRoutes_1.default);
 app.use('/api/auth', authRoutes_1.default);
+app.use('/confirmation', confirmation_1.default);
 app.use('/api', loginRoute_1.default);
 app.get('/', (req, res) => { res.send('Welcome to the API'); });
 app.get('/health-check', (req, res) => { res.send('OK'); });

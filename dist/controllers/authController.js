@@ -12,10 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.registerUser = void 0;
+exports.resetPassword = exports.login = exports.registerUser = void 0;
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const User_1 = __importDefault(require("../entity/User"));
-const jwtUtils_1 = require("../utils/jwtUtils"); // Import the generateToken function
+const nodemailer_1 = __importDefault(require("../config/nodemailer"));
 // Register user (example)
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -38,12 +39,14 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
             password: hashedPassword,
         });
         yield newUser.save();
-        // Generate JWT token after user is created
-        const token = (0, jwtUtils_1.generateToken)(newUser._id.toString());
+        // const token = generateToken(newUser._id.toString());
+        const token = jsonwebtoken_1.default.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+        const url = `https://enterprisepro-frontend.onrender.com/confirmation/${token}`;
+        yield nodemailer_1.default.sendMail({ to: email, subject: 'Confirm your email', html: `Please click this link to confirm your email: <a href="${url}">${url}</a>` });
         return res.status(201).json({
-            message: 'User registered successfully',
+            message: 'User registered successfully. Please check your email to confirm your registration.',
             token, // Send the token back to the client
-            user: { id: newUser._id.toString(), name: newUser.businessName, email: newUser.email }, // Customize as needed
+            user: { id: newUser._id.toString(), name: newUser.businessName, email: newUser.email },
         });
     }
     catch (error) {
@@ -58,41 +61,45 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.registerUser = registerUser;
-// // Login
-// export const login = async (req: Request, res: Response) => {
-//   const { email, password } = req.body;
-//   try {
-//     const user = await UserModel.findOne({ email });
-//     if (!user) {
-//       return res.status(400).json({ message: 'Invalid credentials' });
-//     }
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(400).json({ message: 'Invalid credentials' });
-//     }
-//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET as string, {
-//       expiresIn: '1h',
-//     });
-//     res.status(200).json({ message: 'Login successful', token });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Error logging in', error });
-//   }
-// };
-// // Reset Password
-//  export const resetPassword = async (req: Request, res: Response) => {
-//   const { token } = req.params;
-//   const { newPassword } = req.body;
-//   try {
-//     const decoded: any = jwt.verify(token, process.env.JWT_SECRET as string);
-//     const user = await UserModel.findById(decoded.userId);
-//     if (!user) {
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
-//     user.password = hashedPassword;
-//     await user.save();
-//     res.status(200).json({ message: 'Password reset successfully' });
-//   } catch (error) {
-//     res.status(400).json({ message: 'Invalid or expired token', error });
-//   }
-// };
+// Login
+const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
+    try {
+        const user = yield User_1.default.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+        const isMatch = yield bcryptjs_1.default.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+        const token = jsonwebtoken_1.default.sign({ userId: user._id }, process.env.JWT_SECRET, {
+            expiresIn: '1h',
+        });
+        res.status(200).json({ message: 'Login successful', token });
+    }
+    catch (error) {
+        res.status(500).json({ message: 'Error logging in', error });
+    }
+});
+exports.login = login;
+// Reset Password
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
+        const user = yield User_1.default.findById(decoded.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const hashedPassword = yield bcryptjs_1.default.hash(newPassword, 10);
+        user.password = hashedPassword;
+        yield user.save();
+        res.status(200).json({ message: 'Password reset successfully' });
+    }
+    catch (error) {
+        res.status(400).json({ message: 'Invalid or expired token', error });
+    }
+});
+exports.resetPassword = resetPassword;
