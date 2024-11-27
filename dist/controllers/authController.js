@@ -40,9 +40,10 @@ const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* (
         });
         yield newUser.save();
         // const token = generateToken(newUser._id.toString());
-        const token = jsonwebtoken_1.default.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-        const url = `https://enterprisepro-frontend.onrender.com/confirmation/${token}`;
-        yield nodemailer_1.default.sendMail({ to: email, subject: 'Confirm your email', html: `Please click this link to confirm your email: <a href="${url}">${url}</a>` });
+        const token = jsonwebtoken_1.default.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' }, (err, token) => {
+            const url = `https://enterprisepro-frontend.onrender.com/confirmation/${token}`;
+            nodemailer_1.default.sendMail({ to: email, subject: 'Confirm your email', html: `Please click this link to confirm your email: <a href="${url}">${url}</a>` });
+        });
         return res.status(201).json({
             message: 'User registered successfully. Please check your email to confirm your registration.',
             token, // Send the token back to the client
