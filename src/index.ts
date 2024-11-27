@@ -1,6 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import dotev from 'dotenv'
 import businessRoutes from './routes/businessRoutes';
 import loginRoute from './routes/loginRoute';
 import authRoutes from './routes/authRoutes'; 
@@ -12,11 +12,11 @@ import mongoSanitize from 'express-mongo-sanitize'; // Assuming you're using exp
 import passport from 'passport'; // If using Passport.js for authentication
 import sanitizeInputs from './middleware/sanitizeInputs'; // Custom input sanitization middleware
 import logRequest from './middleware/logRequest'; // Custom request logging middleware
-import confirmationRoutes from './routes/confirmation';
+// import cors
 
 
 
-dotenv.config();
+dotev.config();
 
 const app: Application = express();
 
