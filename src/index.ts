@@ -81,7 +81,7 @@ app.get('/api/confirmation/:token', async (req: Request, res: Response) => {
 
   await User.findByIdAndUpdate(userId, { isVerified: true }); 
   console.log('User verified:', userId);
-  return res.redirect('/login'); 
+  return res.redirect('https://enterprisepro-backend.onrender.com/login'); 
 } catch (err) { 
   console.error('Error during confirmation:', err);
   return res.status(400).send('Invalid token'); 

@@ -38,12 +38,15 @@ export const registerUser = async (req: Request, res: Response): Promise<Respons
     await newUser.save();
 
     // const token = generateToken(newUser._id.toString());
-    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET as string, { expiresIn: '1d' }); 
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET as string, { expiresIn: '1d' }, (err, token) =>{
+      const url = `https://enterprisepro-frontend.onrender.com/confirmation/${token}`; 
 
-    const url = `https://enterprisepro-frontend.onrender.com/confirmation/${token}`; 
+     transporter.sendMail({ to: email, subject: 'Confirm your email', html: `Please click this link to confirm your email: <a href="${url}">${url}</a>` });
+
+    }); 
+
 
     
-    await transporter.sendMail({ to: email, subject: 'Confirm your email', html: `Please click this link to confirm your email: <a href="${url}">${url}</a>` });
 
 
     return res.status(201).json({

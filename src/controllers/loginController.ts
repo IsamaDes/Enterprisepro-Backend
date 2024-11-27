@@ -13,6 +13,10 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    if(!user.isVerified){
+      throw new Error ('please confirm your email to login');
+    }
+
     // Compare password with the hashed password stored in the database
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
