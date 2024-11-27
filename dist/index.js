@@ -18,6 +18,7 @@ const passport_1 = __importDefault(require("passport")); // If using Passport.js
 const sanitizeInputs_1 = __importDefault(require("./middleware/sanitizeInputs")); // Custom input sanitization middleware
 const logRequest_1 = __importDefault(require("./middleware/logRequest")); // Custom request logging middleware
 const confirmation_1 = __importDefault(require("./routes/confirmation"));
+// import cors
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 // Log incoming request headers
