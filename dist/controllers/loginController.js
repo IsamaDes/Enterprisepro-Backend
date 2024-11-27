@@ -24,6 +24,9 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!user) {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
+        if (!user.isVerified) {
+            throw new Error('please confirm your email to login');
+        }
         // Compare password with the hashed password stored in the database
         const isMatch = yield bcryptjs_1.default.compare(password, user.password);
         if (!isMatch) {

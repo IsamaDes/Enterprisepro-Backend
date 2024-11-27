@@ -62,7 +62,7 @@ app.options('*', cors(corsOptions)); // Allow pre-flight requests for all routes
 app.use(express.json());
 app.use('/api/business', businessRoutes);
 app.use('/api/auth', authRoutes);
-
+app.use('/api/confirmation', confirmationRoutes);
 
 app.use('/api', loginRoute);
 
