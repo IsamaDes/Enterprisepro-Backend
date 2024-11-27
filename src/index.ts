@@ -12,8 +12,7 @@ import mongoSanitize from 'express-mongo-sanitize'; // Assuming you're using exp
 import passport from 'passport'; // If using Passport.js for authentication
 import sanitizeInputs from './middleware/sanitizeInputs'; // Custom input sanitization middleware
 import logRequest from './middleware/logRequest'; // Custom request logging middleware
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import User from './entity/User';
+import confirmationRoutes from './routes/confirmation';
 
 
 
@@ -63,7 +62,7 @@ app.options('*', cors(corsOptions)); // Allow pre-flight requests for all routes
 app.use(express.json());
 app.use('/api/business', businessRoutes);
 app.use('/api/auth', authRoutes);
-
+app.use('/api/confirmation', confirmationRoutes); // Ensure this line is correct
 
 app.use('/api', loginRoute);
 
